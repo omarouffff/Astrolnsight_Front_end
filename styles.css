@@ -1,0 +1,122 @@
+:root{
+  --bg: #0b1020;
+  --panel: #0f172a;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #0ea5e9;
+  --accent-2: #8b5cf6;
+  --ring: rgba(14,165,233,.5);
+  --shadow: rgba(2,6,23,.6);
+}
+
+/* light theme removed: site is dark-mode only */
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color:var(--text);
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(14,165,233,.18), transparent 50%),
+              radial-gradient(1000px 600px at -10% 10%, rgba(139,92,246,.16), transparent 45%),
+              var(--bg);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+.skip-link{
+  position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden
+}
+.skip-link:focus{position:static;width:auto;height:auto;padding:8px 12px;background:var(--panel);border-radius:8px;box-shadow:0 10px 30px var(--shadow)}
+
+.site-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:20px clamp(16px,5vw,32px);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700}
+.brand .logo{font-size:22px}
+.brand-name{letter-spacing:.2px}
+.header-actions{display:flex;align-items:center;gap:12px}
+.cta{color:var(--text);text-decoration:none;border:1px solid color-mix(in oklab, var(--text) 16%, transparent);padding:8px 12px;border-radius:10px;transition:.2s ease}
+.cta:hover{transform:translateY(-1px);border-color:color-mix(in oklab, var(--text) 26%, transparent)}
+
+.icon-button{cursor:pointer;border:none;background:transparent;color:var(--text);padding:8px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.icon-button:hover{background:color-mix(in oklab, var(--text) 8%, transparent)}
+.icon-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
+.icon-button.clear{display:none}
+
+.hero{
+  display:grid;place-items:center;padding:24px clamp(16px,5vw,32px);padding-top:6vh;padding-bottom:12vh
+}
+.headline{font-size:clamp(28px,5vw,48px);margin:8px 0 6px;font-weight:700;letter-spacing:-.02em}
+.tagline{margin:0 0 26px;color:var(--muted)}
+
+.search{width:min(880px,96vw)}
+.search-field{
+  position:relative;display:flex;align-items:center;gap:8px;background:var(--panel);
+  border:1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  padding:10px 12px;border-radius:14px;box-shadow:0 10px 30px var(--shadow);
+  transition:border-color .2s ease, transform .12s ease;
+}
+.search-field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring), 0 12px 35px var(--shadow);transform:translateY(-1px)}
+.search-icon{opacity:.8}
+#search-input{flex:1;border:none;background:transparent;color:var(--text);font-size:18px;outline:none}
+#search-input::placeholder{color:color-mix(in oklab, var(--text) 40%, transparent)}
+
+.suggestions{list-style:none;margin:8px 0 0;padding:6px;background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:14px;box-shadow:0 16px 40px var(--shadow);display:none;max-height:min(50vh,420px);overflow:auto}
+.suggestions.visible{display:block}
+.suggestions li{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer}
+.suggestions li[aria-selected="true"], .suggestions li:hover{background:color-mix(in oklab, var(--accent) 12%, transparent)}
+.suggestions .pill{font-size:12px;color:var(--muted);border:1px solid color-mix(in oklab, var(--text) 14%, transparent);padding:2px 8px;border-radius:999px}
+
+.helper-row{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.kbd-hints{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px}
+.kbd{display:inline-block;border:1px solid color-mix(in oklab, var(--text) 14%, transparent);border-bottom-width:2px;padding:1px 6px;border-radius:6px;background:color-mix(in oklab, var(--text) 6%, transparent);font-weight:600;font-size:12px}
+.sep{opacity:.5}
+.recent{display:flex;flex-wrap:wrap;gap:6px}
+.recent .chip{background:color-mix(in oklab, var(--accent) 14%, transparent);color:var(--text);border:1px solid color-mix(in oklab, var(--accent) 36%, transparent);padding:4px 8px;border-radius:999px;font-size:12px;cursor:pointer}
+
+.site-footer{padding:40px clamp(16px,5vw,32px);display:flex;gap:12px;align-items:center;justify-content:center;color:var(--muted)}
+.site-footer a{color:var(--text)}
+
+@media (max-width:580px){
+  .helper-row{flex-direction:column;align-items:flex-start;gap:8px}
+}
+
+/* Entrance animation */
+.hero{animation:fadeIn .6s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+
+#results-section{width:min(880px,96vw);margin:0 auto;padding:0 clamp(16px,5vw,32px)}
+.results-toolbar{display:flex;gap:8px;justify-content:flex-end;margin:8px 0 12px}
+.results{background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:14px;box-shadow:0 16px 40px var(--shadow);padding:16px;min-height:90px}
+.results:focus{outline:2px solid var(--ring);outline-offset:2px}
+.empty,.error{color:var(--muted)}
+.card{display:block}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.card-title{margin:0;font-size:20px}
+.card-source{color:var(--text);text-decoration:none;border:1px solid color-mix(in oklab, var(--text) 16%, transparent);padding:6px 10px;border-radius:10px}
+.card-body{display:flex;gap:12px;align-items:flex-start}
+.card-body .thumb{width:96px;height:auto;border-radius:10px;border:1px solid color-mix(in oklab, var(--text) 12%, transparent)}
+.extract{margin:0}
+.card-foot{margin-top:10px}
+.links{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:6px 0 0}
+.links a{color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:6px 0}
+.chip.small{font-size:12px;padding:2px 8px;border-radius:999px;background:color-mix(in oklab, var(--accent) 14%, transparent);border:1px solid color-mix(in oklab, var(--accent) 36%, transparent)}
+.bullets{margin:8px 0 0}
+.bullets li{margin:4px 0}
+
+.skeleton{display:grid;gap:10px}
+.skeleton .line{height:12px;background:color-mix(in oklab, var(--text) 10%, transparent);border-radius:8px}
+.skeleton .w60{width:60%}
+.skeleton .w80{width:80%}
+.skeleton .w90{width:90%}
+
+@media (max-width:580px){
+  .card-body{flex-direction:column}
+}
+
+
