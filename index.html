@@ -30,7 +30,7 @@
     </header>
 
     <main class="hero" role="main">
-      <h1 class="headline">Explore the cosmos of knowledge.</h1>
+      <h1 class="headline">Explore the cosmos of knowledge.  </h1>
       <p class="tagline">Chart your course through the stars of information.</p>
 
       <form id="search-form" class="search" role="search" aria-label="Site-wide">
@@ -62,10 +62,40 @@
       <div class="results-toolbar" role="group" aria-label="Result actions">
         <button type="button" id="summarize-btn" class="cta" disabled>Summarize</button>
         <button type="button" id="highlights-btn" class="cta" disabled>Highlights</button>
+        <button type="button" id="copy-btn" class="cta" disabled>Copy</button>
+        <button type="button" id="export-btn" class="cta" disabled>Export PDF</button>
+        <span id="confidence-meter" class="confidence-meter" aria-live="polite" aria-atomic="true"></span>
       </div>
       <div id="results" class="results" tabindex="-1"></div>
     </section>
 
+    <section id="references-section" class="container">
+      <header class="section-head">
+        <h2 class="section-title">References</h2>
+        <div class="section-actions" id="references-actions">
+          <a class="cta" href="https://taskbook.nasaprs.com" target="_blank" rel="noopener" title="NASA Task Book">📚 NASA Task Book ↗</a>
+          <a class="cta" href="https://osdr.nasa.gov" target="_blank" rel="noopener" title="Open Science Data Repository">🛰️ NASA OSDR ↗</a>
+        </div>
+      </header>
+      <ol id="references-list" class="reference-list" aria-label="Citations"></ol>
+    </section>
+
+    <section id="timeline-section" class="container">
+      <header class="section-head">
+        <h2 class="section-title">Timeline</h2>
+        <div class="section-actions">
+          <label class="muted" for="timeline-year">Year</label>
+          <input id="timeline-year" class="select" type="range" min="1900" max="2100" step="1" value="2000" />
+          <span id="timeline-year-display" class="muted">2000–2009</span>
+        </div>
+      </header>
+      <div class="timeline" id="timeline" role="img" aria-label="Century timeline visualization"></div>
+      <div class="timeline-legend muted">
+
+      </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="script.js"></script>
   </body>
 </html>

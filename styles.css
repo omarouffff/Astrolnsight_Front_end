@@ -17,9 +17,7 @@ body{
   margin:0;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   color:var(--text);
-  background: radial-gradient(1200px 600px at 80% -10%, rgba(14,165,233,.18), transparent 50%),
-              radial-gradient(1000px 600px at -10% 10%, rgba(139,92,246,.16), transparent 45%),
-              var(--bg);
+  background: var(--bg);
   line-height:1.6;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
@@ -39,12 +37,13 @@ body{
 .brand-name{letter-spacing:.2px}
 .header-actions{display:flex;align-items:center;gap:12px}
 .cta{color:var(--text);text-decoration:none;border:1px solid color-mix(in oklab, var(--text) 16%, transparent);padding:8px 12px;border-radius:10px;transition:.2s ease}
-.cta:hover{transform:translateY(-1px);border-color:color-mix(in oklab, var(--text) 26%, transparent)}
+.cta:hover{transform:translateY(-1px);border-color:color-mix(in oklab, var(--text) 26%, transparent);background:color-mix(in oklab, var(--text) 6%, transparent)}
 
 .icon-button{cursor:pointer;border:none;background:transparent;color:var(--text);padding:8px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .icon-button:hover{background:color-mix(in oklab, var(--text) 8%, transparent)}
 .icon-button:focus-visible{outline:2px solid var(--ring);outline-offset:2px}
-.icon-button.clear{display:none}
+.icon-button.clear{opacity:0;visibility:hidden;transition:opacity .15s ease}
+.icon-button.clear.show{opacity:1;visibility:visible}
 
 .hero{
   display:grid;place-items:center;padding:24px clamp(16px,5vw,32px);padding-top:6vh;padding-bottom:12vh
@@ -53,6 +52,10 @@ body{
 .tagline{margin:0 0 26px;color:var(--muted)}
 
 .search{width:min(880px,96vw)}
+.phone-frame{display:grid;place-items:center;width:min(420px,96vw);height:70vh;border:1px solid color-mix(in oklab, var(--text) 14%, transparent);border-radius:36px;padding:18px;box-shadow:0 20px 60px var(--shadow);background:linear-gradient(180deg, color-mix(in oklab, var(--panel) 90%, black 10%), color-mix(in oklab, var(--panel) 96%, black 4%))}
+.phone-frame .search{width:100%}
+.phone-frame .helper-row{justify-content:center}
+.phone-frame .recent{justify-content:center}
 .search-field{
   position:relative;display:flex;align-items:center;gap:8px;background:var(--panel);
   border:1px solid color-mix(in oklab, var(--text) 12%, transparent);
@@ -62,6 +65,8 @@ body{
 .search-field:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--ring), 0 12px 35px var(--shadow);transform:translateY(-1px)}
 .search-icon{opacity:.8}
 #search-input{flex:1;border:none;background:transparent;color:var(--text);font-size:18px;outline:none}
+.search-field .search-icon{margin-left:2px}
+.search-field .clear{margin-right:2px}
 #search-input::placeholder{color:color-mix(in oklab, var(--text) 40%, transparent)}
 
 .suggestions{list-style:none;margin:8px 0 0;padding:6px;background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:14px;box-shadow:0 16px 40px var(--shadow);display:none;max-height:min(50vh,420px);overflow:auto}
@@ -82,6 +87,7 @@ body{
 
 @media (max-width:580px){
   .helper-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .phone-frame{height:72vh}
 }
 
 /* Entrance animation */
@@ -91,7 +97,7 @@ body{
 
 #results-section{width:min(880px,96vw);margin:0 auto;padding:0 clamp(16px,5vw,32px)}
 .results-toolbar{display:flex;gap:8px;justify-content:flex-end;margin:8px 0 12px}
-.results{background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:14px;box-shadow:0 16px 40px var(--shadow);padding:16px;min-height:90px}
+.results{background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:16px;box-shadow:0 16px 40px var(--shadow);padding:16px;min-height:90px}
 .results:focus{outline:2px solid var(--ring);outline-offset:2px}
 .empty,.error{color:var(--muted)}
 .card{display:block}
@@ -109,6 +115,23 @@ body{
 .bullets{margin:8px 0 0}
 .bullets li{margin:4px 0}
 
+/* Inline citation and reference popover */
+.cite{color:var(--accent);cursor:pointer;text-decoration:none;border-bottom:1px dotted color-mix(in oklab, var(--accent) 60%, transparent)}
+.ref-pop{position:relative;display:inline-block}
+.ref-pop .ref-card{position:absolute;z-index:20;left:0;top:125%;width:min(480px,90vw);background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 14%, transparent);border-radius:12px;box-shadow:0 20px 50px var(--shadow);padding:12px;display:none}
+.ref-pop[aria-expanded="true"] .ref-card{display:block}
+.ref-title{margin:0 0 4px;font-weight:600}
+.ref-meta{color:var(--muted);font-size:13px;margin:0 0 8px}
+.ref-actions{display:flex;gap:8px;align-items:center}
+.icon{display:inline-flex;width:18px;height:18px;align-items:center;justify-content:center}
+
+/* Confidence meter */
+.confidence-meter{margin-left:auto;color:var(--muted);font-size:14px;display:inline-flex;align-items:center;gap:6px}
+.conf-dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+.conf-low{background:#ef4444}
+.conf-medium{background:#f59e0b}
+.conf-high{background:#22c55e}
+
 .skeleton{display:grid;gap:10px}
 .skeleton .line{height:12px;background:color-mix(in oklab, var(--text) 10%, transparent);border-radius:8px}
 .skeleton .w60{width:60%}
@@ -117,6 +140,47 @@ body{
 
 @media (max-width:580px){
   .card-body{flex-direction:column}
+  .section-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .section-title{font-size:20px}
+  .reference-list li{padding:8px 10px}
+  .timeline{padding:12px;min-height:100px}
 }
 
 
+/* Sections */
+.container{width:min(880px,96vw);margin:22px auto;padding:0 clamp(16px,5vw,32px)}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin:12px 0}
+.section-title{margin:0;font-size:22px}
+.section-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* Reference list */
+.reference-list{list-style:decimal inside;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.reference-list li{background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:12px;padding:10px 12px}
+.reference-list .ref-item{display:flex;align-items:flex-start;gap:10px}
+.reference-list .ref-main{flex:1}
+.reference-list .ref-title{margin:0 0 2px;font-weight:600}
+.reference-list .ref-meta{margin:0 0 6px;color:var(--muted);font-size:13px}
+.ref-actions a{color:var(--text);text-decoration:none;border:1px solid color-mix(in oklab, var(--text) 16%, transparent);padding:4px 8px;border-radius:8px}
+.ref-actions a:hover{transform:translateY(-1px)}
+.ref-toggle{cursor:pointer}
+.cta.small{padding:6px 10px;font-size:14px}
+
+/* Timeline */
+.timeline{position:relative;background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 12%, transparent);border-radius:14px;padding:16px;min-height:120px;overflow-x:auto}
+/* D3 SVG inherits container width */
+.timeline svg{display:block;width:100%;height:auto}
+.timeline-tip{position:fixed;background:var(--panel);border:1px solid color-mix(in oklab, var(--text) 16%, transparent);border-radius:8px;padding:6px 8px;color:var(--text);font-size:12px;box-shadow:0 10px 30px var(--shadow);z-index:50}
+.tl-note-rect{fill:color-mix(in oklab, var(--panel) 70%, black 30%);stroke:color-mix(in oklab, var(--text) 12%, transparent);stroke-width:1}
+.tl-note-text{fill:var(--text);font-size:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:999px;margin-right:6px}
+.dot-paper{background:#06b6d4}
+.dot-mission{background:#a78bfa}
+.dot-milestone{background:#34d399}
+.timeline-legend{display:flex;gap:16px;align-items:center;justify-content:flex-end;margin:8px 0}
+
+/* Select */
+.select{background:var(--panel);color:var(--text);border:1px solid color-mix(in oklab, var(--text) 16%, transparent);border-radius:10px;padding:6px 10px}
+
+/* Reveal-on-scroll */
+.reveal-init{opacity:0;transform:translateY(10px)}
+.reveal-in{opacity:1;transform:none;transition:opacity .5s ease, transform .5s ease}
