@@ -184,3 +184,165 @@ body{
 /* Reveal-on-scroll */
 .reveal-init{opacity:0;transform:translateY(10px)}
 .reveal-in{opacity:1;transform:none;transition:opacity .5s ease, transform .5s ease}
+
+
+/*  Time Line */
+/* Publication Timeline Slider */
+.publication-timeline-wrapper {
+  position: relative;
+  overflow: hidden;
+  padding: 40px 0;
+}
+
+.publication-timeline {
+  display: flex;
+  gap: 40px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.publication-timeline::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: -9999px; /* Extend line far to the right */
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 50%, var(--accent-2) 100%);
+  z-index: 0;
+}
+
+.publication-timeline-item {
+  min-width: 280px;
+  position: relative;
+  z-index: 1;
+}
+
+.publication-timeline-point {
+  width: 20px;
+  height: 20px;
+  background: var(--panel);
+  border: 3px solid var(--accent);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 0 0 6px color-mix(in oklab, var(--accent) 12%, transparent);
+  transition: all 0.3s ease;
+}
+
+.publication-timeline-item:hover .publication-timeline-point {
+  transform: scale(1.2);
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 10px color-mix(in oklab, var(--accent-2) 18%, transparent);
+}
+
+.publication-timeline-content {
+  background: color-mix(in oklab, var(--panel) 90%, var(--accent) 10%);
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.publication-timeline-item:hover .publication-timeline-content {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px var(--shadow);
+  border-color: var(--accent);
+}
+
+.publication-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.publication-date {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.publication-date::before {
+  content: '📅';
+  font-size: 14px;
+}
+
+.timeline-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: var(--panel);
+  border: 1px solid color-mix(in oklab, var(--text) 16%, transparent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px var(--shadow);
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.timeline-arrow:hover {
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.timeline-arrow:hover::after {
+  border-color: var(--accent);
+}
+
+.timeline-arrow.left {
+  left: 0px;
+}
+
+.timeline-arrow.right {
+  right: 0px;
+}
+
+.timeline-arrow::after {
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-top: 2px solid var(--text);
+  border-right: 2px solid var(--text);
+  transition: border-color 0.2s ease;
+}
+
+.timeline-arrow.left::after {
+  transform: rotate(-135deg);
+  margin-left: 3px;
+}
+
+.timeline-arrow.right::after {
+  transform: rotate(45deg);
+  margin-right: 3px;
+}
+
+.timeline-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .publication-timeline-item {
+    min-width: 240px;
+  }
+  
+  .timeline-arrow {
+    width: 38px;
+    height: 38px;
+  }
+}

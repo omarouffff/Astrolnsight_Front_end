@@ -82,16 +82,16 @@
 
     <section id="timeline-section" class="container">
       <header class="section-head">
-        <h2 class="section-title">Timeline</h2>
-        <div class="section-actions">
-          <label class="muted" for="timeline-year">Year</label>
-          <input id="timeline-year" class="select" type="range" min="1900" max="2100" step="1" value="2000" />
-          <span id="timeline-year-display" class="muted">2000–2009</span>
-        </div>
+        <h2 class="section-title">Publication Timeline</h2>
       </header>
-      <div class="timeline" id="timeline" role="img" aria-label="Century timeline visualization"></div>
-      <div class="timeline-legend muted">
-
+      <div class="publication-timeline-wrapper">
+        <div class="timeline-arrow left" id="pub-prev-btn"></div>
+        
+        <div class="publication-timeline" id="publication-timeline">
+          <!-- Timeline items will be populated by JavaScript -->
+        </div>
+        
+        <div class="timeline-arrow right" id="pub-next-btn"></div>
       </div>
     </section>
 

@@ -679,6 +679,71 @@
   const commonStopwords = [
     'the','is','in','at','of','a','an','and','or','to','for','on','with','by','from','as','that','this','it','its','are','was','were','be','been','has','have','had','but','not','which','into','their','they','them','these','those','than','then','so','such','about','over','under','after','before','between','during','while','most','more','many','some','any','each','also','can','may','might','one','two','first','second','third'
   ];
+
+  // PUBLICATION TIMELINE SLIDER
+  const pubTimelineEl = doc.getElementById('publication-timeline');
+  const pubPrevBtn = doc.getElementById('pub-prev-btn');
+  const pubNextBtn = doc.getElementById('pub-next-btn');
+
+  if (pubTimelineEl && pubPrevBtn && pubNextBtn) {
+    let pubCurrentPosition = 0;
+    const pubScrollAmount = 320;
+
+    // Sample publications data until backend be available
+    const publications = [
+      { name: 'Effects of Space Radiation on Immune Cells', date: 'January 15, 2023' },
+      { name: 'Microgravity and Human Physiology', date: 'March 22, 2023' },
+      { name: 'Long-Duration Spaceflight Studies', date: 'June 10, 2023' },
+      { name: 'Cardiovascular Adaptations in Space', date: 'August 5, 2023' },
+      { name: 'Bone Density Changes During Missions', date: 'October 18, 2023' },
+      { name: 'Psychological Impacts of Isolation', date: 'December 30, 2023' },
+      { name: 'Plant Growth in Microgravity', date: 'February 14, 2024' }
+    ];
+
+    function renderPublications() {
+      pubTimelineEl.innerHTML = publications.map(pub => `
+        <div class="publication-timeline-item">
+          <div class="publication-timeline-point"></div>
+          <div class="publication-timeline-content">
+            <div class="publication-name">${escapeHtml(pub.name)}</div>
+            <div class="publication-date">${escapeHtml(pub.date)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updatePubButtons() {
+      const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
+      pubPrevBtn.disabled = pubCurrentPosition <= 0;
+      pubNextBtn.disabled = pubCurrentPosition >= maxScroll;
+    }
+
+    function slidePubTimeline(direction) {
+      const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
+      
+      if (direction === 'next') {
+        pubCurrentPosition = Math.min(pubCurrentPosition + pubScrollAmount, maxScroll);
+      } else {
+        pubCurrentPosition = Math.max(pubCurrentPosition - pubScrollAmount, 0);
+      }
+      
+      pubTimelineEl.style.transform = `translateX(-${pubCurrentPosition}px)`;
+      updatePubButtons();
+    }
+
+    pubNextBtn.addEventListener('click', () => slidePubTimeline('next'));
+    pubPrevBtn.addEventListener('click', () => slidePubTimeline('prev'));
+
+    renderPublications();
+    updatePubButtons();
+
+    window.addEventListener('resize', () => {
+      pubCurrentPosition = 0;
+      pubTimelineEl.style.transform = 'translateX(0)';
+      updatePubButtons();
+    });
+  }
+
 })();
 
 
