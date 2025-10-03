@@ -153,6 +153,7 @@
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const q = input.value.trim();
+    loadData(q);
     if (!q) return;
     onSubmit(q);
   });
