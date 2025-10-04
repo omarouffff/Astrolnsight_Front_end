@@ -150,13 +150,13 @@
     onSubmit(value);
   }
 
-  // form.addEventListener('submit', (e) => {
-  //   e.preventDefault();
-  //   const q = input.value.trim();
-  //   loadData(q);
-  //   if (!q) return;
-  //   onSubmit(q);
-  // });
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    loadData(q);
+    if (!q) return;
+    onSubmit(q);
+  });
 
   function onSubmit(q) {
     saveRecent(q);
@@ -172,68 +172,71 @@
   let lastPlainText = '';
   let lastTitle = '';
 
-  async function fetchAndRender(query) {
-    setBusy(true);
-    disableActions(true);
-    resultsEl.innerHTML = renderSkeleton();
-    try {
-      
-      const first = loadData();
-      if (!first) {
-        resultsEl.innerHTML = `<div class="empty">No results found for “${escapeHtml(query)}”.</div>`;
-        setBusy(false);
-        hideResultsSection();
-        hideReferences();
-        hideToolbar();
-        hideTimeline();
-        return;
-      }
-      const title = query;
+ async function fetchAndRender(question) {
+  setBusy(true);
+  disableActions(true);
+  resultsEl.innerHTML = renderSkeleton();
+  
+  try {
+    const apiUrl = "http://127.0.0.1:5000/ask?question=" + question;
+    const res = await fetch(apiUrl, { headers: { "accept": "application/json" } });
+    if (!res.ok) throw new Error("Backend request failed");
     
+    const data = await res.json();
 
-      lastTitle = title;
+    // Extract data from backend response
+    const answer = data.answer;
+    const citations = data.citations || [];
+    const citationsNamesWithYear = data.citationsNamesWithYear || [];
 
-      const otherLinks = (searchJson.pages || []).slice(1).map(p =>
-        `<li><a href="https://en.wikipedia.org/wiki/${encodeURIComponent(p.title)}" target="_blank" rel="noopener">${escapeHtml(p.title)}</a></li>`
-      ).join('');
+    // Build the results card
+    resultsEl.innerHTML = `
+      <article class="card">
+        <header class="card-head">
+          <h2 class="card-title">Answer:</h2>
+        </header>
+        <div class="card-body">
+          <p class="extract">${escapeHtml(answer)}</p>
+        </div>
+        ${
+          citations.length
+            ? `<footer class="card-foot">
+                <div class="muted">Citations</div>
+                <ul class="links">
+                  ${citations
+                    .map(
+                      c =>
+                        `<li><a href="${c.url}" target="_blank" rel="noopener">${escapeHtml(c.title)}</a></li>`
+                    )
+                    .join("")}
+                </ul>
+              </footer>`
+            : ""
+        }
+      </article>
+    `;
 
-      resultsEl.innerHTML = `
-        <article class="card">
-          <header class="card-head">
-            <h2 class="card-title">${escapeHtml(title)}</h2>
-            <a class="card-source" href="${url}" target="_blank" rel="noopener">View source ↗</a>
-          </header>
-          <div class="card-body">
-            ${thumb ? `<img class="thumb" alt="" src="${thumb}">` : ''}
-            <p class="extract">${escapeHtml(first.answer)}</p>
-          </div>
-          ${first.citiations ? `<footer class="card-foot"><div class="muted">Related</div><ul class="links">${first.citiations}</ul></footer>` : ''}
-        </article>
-      `;
+    // Show the rest of your UI
+    showReferences(citations);
+    renderPublications(citationsNamesWithYear);
+    showToolbar();
+    showTimeline();
+    showResultsSection();
 
-      resultsEl.focus();
-      disableActions(!lastPlainText);
-
-      // Show references after successful result
-      showReferences(mockCitations());
-      showToolbar();
-      showTimeline();
-      showResultsSection();
-
-      // mark sections for reveal animation
-      markReveal(resultsSection);
-      markReveal(referencesSection);
-      markReveal(doc.getElementById('timeline-section'));
-    } catch (err) {
-      resultsEl.innerHTML = `<div class="error">Could not load results. Please try again.</div>`;
-      hideResultsSection();
-      hideReferences();
-      hideToolbar();
-      hideTimeline();
-    } finally {
-      setBusy(false);
-    }
+    markReveal(resultsSection);
+    markReveal(referencesSection);
+    markReveal(doc.getElementById("timeline-section"));
+  } catch (err) {
+    console.error(err);
+    resultsEl.innerHTML = `<div class="error">Could not load data from backend.</div>`;
+    hideResultsSection();
+    hideReferences();
+    hideToolbar();
+    hideTimeline();
+  } finally {
+    setBusy(false);
   }
+}
 
   function setBusy(isBusy) {
     resultsSection?.setAttribute('aria-busy', String(isBusy));
@@ -670,69 +673,79 @@
     'the','is','in','at','of','a','an','and','or','to','for','on','with','by','from','as','that','this','it','its','are','was','were','be','been','has','have','had','but','not','which','into','their','they','them','these','those','than','then','so','such','about','over','under','after','before','between','during','while','most','more','many','some','any','each','also','can','may','might','one','two','first','second','third'
   ];
 
-  // PUBLICATION TIMELINE SLIDER
-  const pubTimelineEl = doc.getElementById('publication-timeline');
-  const pubPrevBtn = doc.getElementById('pub-prev-btn');
-  const pubNextBtn = doc.getElementById('pub-next-btn');
+  // === PUBLICATION TIMELINE SLIDER ===
+const pubTimelineEl = doc.getElementById('publication-timeline');
+const pubPrevBtn = doc.getElementById('pub-prev-btn');
+const pubNextBtn = doc.getElementById('pub-next-btn');
 
-  if (pubTimelineEl && pubPrevBtn && pubNextBtn) {
-    let pubCurrentPosition = 0;
-    const pubScrollAmount = 320;
+if (pubTimelineEl && pubPrevBtn && pubNextBtn) {
+  let pubCurrentPosition = 0;
+  const pubScrollAmount = 320;
 
-    // Sample publications data until backend be available
-    const publications = [
-      { name: 'Effects of Space Radiation on Immune Cells', date: 'January 15, 2023' },
-      { name: 'Microgravity and Human Physiology', date: 'March 22, 2023' },
-      { name: 'Long-Duration Spaceflight Studies', date: 'June 10, 2023' },
-      { name: 'Cardiovascular Adaptations in Space', date: 'August 5, 2023' },
-      { name: 'Bone Density Changes During Missions', date: 'October 18, 2023' },
-      { name: 'Psychological Impacts of Isolation', date: 'December 30, 2023' },
-      { name: 'Plant Growth in Microgravity', date: 'February 14, 2024' }
-    ];
+  // 🧩 Function to render timeline items
+  function renderPublications(publications) {
+    if (!publications || publications.length === 0) {
+      pubTimelineEl.innerHTML = `<div class="empty">No publications found.</div>`;
+      return;
+    }
 
-    function renderPublications() {
-      pubTimelineEl.innerHTML = publications.map(pub => `
-        <div class="publication-timeline-item">
-          <div class="publication-timeline-point"></div>
-          <div class="publication-timeline-content">
-            <div class="publication-name">${escapeHtml(pub.name)}</div>
-            <div class="publication-date">${escapeHtml(pub.date)}</div>
-          </div>
+    pubTimelineEl.innerHTML = publications.map(pub => `
+      <div class="publication-timeline-item">
+        <div class="publication-timeline-point"></div>
+        <div class="publication-timeline-content">
+          <div class="publication-name">${pub.title}</div>
+          <div class="publication-date">${pub.year}</div>
         </div>
-      `).join('');
-    }
-
-    function updatePubButtons() {
-      const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
-      pubPrevBtn.disabled = pubCurrentPosition <= 0;
-      pubNextBtn.disabled = pubCurrentPosition >= maxScroll;
-    }
-
-    function slidePubTimeline(direction) {
-      const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
-      
-      if (direction === 'next') {
-        pubCurrentPosition = Math.min(pubCurrentPosition + pubScrollAmount, maxScroll);
-      } else {
-        pubCurrentPosition = Math.max(pubCurrentPosition - pubScrollAmount, 0);
-      }
-      
-      pubTimelineEl.style.transform = `translateX(-${pubCurrentPosition}px)`;
-      updatePubButtons();
-    }
-
-    pubNextBtn.addEventListener('click', () => slidePubTimeline('next'));
-    pubPrevBtn.addEventListener('click', () => slidePubTimeline('prev'));
-
-    renderPublications();
-    updatePubButtons();
-
-    window.addEventListener('resize', () => {
-      pubCurrentPosition = 0;
-      pubTimelineEl.style.transform = 'translateX(0)';
-      updatePubButtons();
-    });
+      </div>
+    `).join('');
   }
+
+  function updatePubButtons() {
+    const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
+    pubPrevBtn.disabled = pubCurrentPosition <= 0;
+    pubNextBtn.disabled = pubCurrentPosition >= maxScroll;
+  }
+
+  function slidePubTimeline(direction) {
+    const maxScroll = pubTimelineEl.scrollWidth - pubTimelineEl.parentElement.clientWidth;
+    if (direction === 'next') {
+      pubCurrentPosition = Math.min(pubCurrentPosition + pubScrollAmount, maxScroll);
+    } else {
+      pubCurrentPosition = Math.max(pubCurrentPosition - pubScrollAmount, 0);
+    }
+    pubTimelineEl.style.transform = `translateX(-${pubCurrentPosition}px)`;
+    updatePubButtons();
+  }
+
+  pubNextBtn.addEventListener('click', () => slidePubTimeline('next'));
+  pubPrevBtn.addEventListener('click', () => slidePubTimeline('prev'));
+
+  window.addEventListener('resize', () => {
+    pubCurrentPosition = 0;
+    pubTimelineEl.style.transform = 'translateX(0)';
+    updatePubButtons();
+  });
+
+  // 🧠 Load publications dynamically from backend
+  async function loadPublicationsFromBackend() {
+    try {
+      const apiUrl = "http://127.0.0.1:5000/ask-test";
+      const res = await fetch(apiUrl, { headers: { "accept": "application/json" } });
+      if (!res.ok) throw new Error("Failed to fetch publications");
+
+      const data = await res.json();
+      
+      updatePubButtons();
+    } catch (err) {
+      console.error("Error loading publications:", err);
+      pubTimelineEl.innerHTML = `<div class="error">Failed to load publication timeline.</div>`;
+    }
+  }
+
+  // 🚀 Initialize timeline with backend data
+  loadPublicationsFromBackend();
+}
+
 
 })();
 
