@@ -150,13 +150,13 @@
     onSubmit(value);
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const q = input.value.trim();
-    loadData(q);
-    if (!q) return;
-    onSubmit(q);
-  });
+  // form.addEventListener('submit', (e) => {
+  //   e.preventDefault();
+  //   const q = input.value.trim();
+  //   loadData(q);
+  //   if (!q) return;
+  //   onSubmit(q);
+  // });
 
   function onSubmit(q) {
     saveRecent(q);
@@ -177,11 +177,8 @@
     disableActions(true);
     resultsEl.innerHTML = renderSkeleton();
     try {
-      const searchUrl = `https://en.wikipedia.org/w/rest.php/v1/search/title?q=${encodeURIComponent(query)}&limit=5`;
-      const searchRes = await fetch(searchUrl, { headers: { 'accept': 'application/json' } });
-      if (!searchRes.ok) throw new Error('Search failed');
-      const searchJson = await searchRes.json();
-      const first = searchJson?.pages?.[0];
+      
+      const first = loadData();
       if (!first) {
         resultsEl.innerHTML = `<div class="empty">No results found for “${escapeHtml(query)}”.</div>`;
         setBusy(false);
@@ -191,16 +188,9 @@
         hideTimeline();
         return;
       }
-      const title = first.title;
-      const summaryUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
-      const sumRes = await fetch(summaryUrl, { headers: { 'accept': 'application/json' } });
-      if (!sumRes.ok) throw new Error('Summary failed');
-      const sumJson = await sumRes.json();
-      const extract = sumJson.extract ?? '';
-      const thumb = sumJson?.thumbnail?.source;
-      const url = sumJson?.content_urls?.desktop?.page ?? `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}`;
+      const title = query;
+    
 
-      lastPlainText = String(extract);
       lastTitle = title;
 
       const otherLinks = (searchJson.pages || []).slice(1).map(p =>
@@ -215,9 +205,9 @@
           </header>
           <div class="card-body">
             ${thumb ? `<img class="thumb" alt="" src="${thumb}">` : ''}
-            <p class="extract">${escapeHtml(extract)}</p>
+            <p class="extract">${escapeHtml(first.answer)}</p>
           </div>
-          ${otherLinks ? `<footer class="card-foot"><div class="muted">Related</div><ul class="links">${otherLinks}</ul></footer>` : ''}
+          ${first.citiations ? `<footer class="card-foot"><div class="muted">Related</div><ul class="links">${first.citiations}</ul></footer>` : ''}
         </article>
       `;
 
